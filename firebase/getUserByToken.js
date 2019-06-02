@@ -1,22 +1,10 @@
-const admin = require('firebase-admin');
-
 /**
  * 
+ * @param {Object} admin - Is a firebase-admin instance
  * @param {String} token - Firebase authentication token.
  * @returns {Promise} - return the user's uid. 
  */
-const getUserByToken = (token) => {
-  
-  if (!admin.apps.length) {
-    if (process.env.SHERPON_ENV==='DEVELOPMENT') {
-      admin.initializeApp({
-        credential: admin.credential.cert(process.env.FIREBASE_SERVICE_ACCOUNT)
-      });
-    } else {
-      admin.initializeApp();
-    }
-  }
-
+const getUserByToken = (admin, token) => {
   return new Promise((resolve, reject) => {
     admin.auth().verifyIdToken(token)
     .then(function(decodedToken) {

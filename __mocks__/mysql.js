@@ -35,7 +35,7 @@ const query = (sql, callback) => {
     callback(false, __mockResultsUsers, __mockFields);
     return;
   }
-  if (sql.search(/SELECT Websites.\*, Permissions.type/) !== -1) {
+  if (sql.search(/SELECT \* FROM Permissions/) !== -1) {
     callback(false, __mockResultsPermissions, __mockFields);
     return;
   }
@@ -49,4 +49,10 @@ const connection = {
 };
 const createConnection = () => connection;
 mysql.createConnection = createConnection;
+
+const pool = {
+  query: query,
+};
+const createPool = () => pool;
+mysql.createPool = createPool;
 module.exports = mysql;

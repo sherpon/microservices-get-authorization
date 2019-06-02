@@ -4,10 +4,13 @@
 require('./utilities/getEnv')();
 
 const getToken = require('./utilities/getToken');
-const getUserByToken = require('./utilities/getUserByToken');
+const getFirebase = require('./firebase/getFirebase');
+const getUserByToken = require('./firebase/getUserByToken');
 const getConnection = require('./db/getConnection');
 const getPermission = require('./db/getPermission');
 
+let connection;
+let firebase;
 /**
  * HTTP Cloud Function.
  * This function is exported by index.js, and is executed when
@@ -32,8 +35,9 @@ exports.getAuthorization = async (req, res) => {
   } else {
     const myToken = myAuthentication.token;
     try {
-      const uid = await getUserByToken(myToken);
-      if (user.id!==uid) {
+      firebase = getFirebase(firebase);
+      const uid = await getUserByToken(firebase, myToken);
+      if (userId!==uid) {
         // must be the same
         res.status(401);
         res.end();  // send no content
@@ -45,10 +49,8 @@ exports.getAuthorization = async (req, res) => {
           res.end();  // return 202 ACCEPTED
         } else {
           // Yes
-          const connection = getConnection();
-          connection.connect();
+          connection = getConnection(connection);
           const permission = await getPermission(connection, userId, websiteId);
-          connection.end();
           if (permission===false) {
             res.status(401);
             res.end();  // send 401 UNAUTHORIZED no content
@@ -62,7 +64,7 @@ exports.getAuthorization = async (req, res) => {
         }
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       res.status(401);
       res.end();  // send no content
     }
