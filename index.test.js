@@ -1,7 +1,7 @@
 
 
 jest.mock('firebase-admin');
-jest.mock('mysql');
+jest.mock('@google-cloud/firestore');
 
 const getMocks = () => {
   let __mockReq = {
@@ -75,26 +75,30 @@ describe('Test getAuthorization', () => {
       token: '1qaz2wsx3edc4rfv',
       uid: '0okm9ijn8uhb',
     };
-    const user = {
+    const mockBody = {
       userId: '0okm9ijn8uhb',
-      websiteId: 111,
+      websiteId: '111',
     };
-    const mysqlResults = [
-      { 
-        type: 'administrator',
+    const mockResultArray = [
+      { // getPermission
+        exists: true,
+        data: () => ({
+          permissions: {
+            '0okm9ijn8uhb': 'administrator',
+          },
+        }),
       }
     ]
     require('firebase-admin').__setMockUser(firebaseUser);
-    require('mysql').__setMockResultsPermissions(mysqlResults);
-    let mocks = getMocks();
+    require('@google-cloud/firestore').__setMockResultArray(mockResultArray);
+    const mocks = getMocks();
     mocks.req.headers.authorization = `Beare ${firebaseUser.token}`;
     mocks.req.method = 'POST';
-    mocks.req.body = user;
-    //expect.assertions(1);
+    mocks.req.body = mockBody;
     await microservice.getAuthorization(mocks.req, mocks.res);
     expect(mocks.res.status.mock.calls[0][0]).toBe(202);
     expect(mocks.res.send.mock.calls.length).toBe(1);
-    expect(mocks.res.send.mock.calls[0][0].permissionType).toBe(mysqlResults[0].type);
+    expect(mocks.res.send.mock.calls[0][0].permissionType).toBe('administrator');
   });
 
   test('It should return unauthorized user-website.', async () => {
@@ -107,9 +111,14 @@ describe('Test getAuthorization', () => {
       userId: '0okm9ijn8uhb',
       websiteId: 111,
     };
-    const mysqlResults = []
+    const mockResultArray = [
+      { // getPermission
+        exists: false,
+        data: () => ({}),
+      }
+    ]
     require('firebase-admin').__setMockUser(firebaseUser);
-    require('mysql').__setMockResultsPermissions(mysqlResults);
+    require('@google-cloud/firestore').__setMockResultArray(mockResultArray);
     let mocks = getMocks();
     mocks.req.headers.authorization = `Beare ${firebaseUser.token}`;
     mocks.req.method = 'POST';

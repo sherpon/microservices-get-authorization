@@ -6,18 +6,18 @@ require('./utilities/getEnv')();
 const getToken = require('./utilities/getToken');
 const getFirebase = require('./firebase/getFirebase');
 const getUserByToken = require('./firebase/getUserByToken');
-const getConnection = require('./db/getConnection');
+const getFirestore = require('./db/getFirestore');
 const getPermission = require('./db/getPermission');
 
-let connection;
 let firebase;
+let firestore;
 
 const getWebsiteAuthorizationStep = async (req, res) => {
   try {
     const userId = req.body.userId;
     const websiteId = req.body.websiteId;
-    connection = getConnection(connection);
-    const permission = await getPermission(connection, userId, websiteId);
+    firestore = getFirestore(firestore);
+    const permission = await getPermission(firestore, userId, websiteId);
     if (permission===false) {
       res.status(401);
       res.end();  // send 401 UNAUTHORIZED no content

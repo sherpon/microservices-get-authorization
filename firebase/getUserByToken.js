@@ -8,8 +8,8 @@ const getUserByToken = (admin, token) => {
   return new Promise((resolve, reject) => {
     admin.auth().verifyIdToken(token)
     .then(function(decodedToken) {
-      var uid = decodedToken.uid
-      resolve(uid)
+      const uid = decodedToken.uid;
+      resolve(uid);
     })
     .catch(function(error) {
       // Handle error
