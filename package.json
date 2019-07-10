@@ -1,5 +1,5 @@
 {
-  "name": "get-authorization",
+  "name": "microservices-get-authorization",
   "version": "1.0.0",
   "description": "## 1. Deploy",
   "main": "index.js",
