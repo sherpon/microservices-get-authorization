@@ -1,5 +1,3 @@
-const getEnv = require('../utilities/getEnv');
-
 jest.mock('firebase-admin');
 const firebaseUser = {
   token: '1qaz2wsx3edc4rfv5tgb',
@@ -14,7 +12,6 @@ describe('Test getUserbyToken', () => {
   
 
   beforeEach(() => {
-    getEnv();
   });
 
   test('It should get the user.', async () => {

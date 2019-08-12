@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 /**
  * Get the environment variables. 
  * 
@@ -7,7 +9,8 @@
 const getEnv = () => {
 
   if (process.env.SHERPON_ENV===undefined) {
-    const DEVELOPMENT_ENV =  require('../env/development.env.json');
+    let DEVELOPMENT_ENV = fs.readFileSync('../env/development.env.json', { encoding: 'utf8' });
+    DEVELOPMENT_ENV = JSON.parse(DEVELOPMENT_ENV);
     
     // copy the env variables
     process.env = Object.assign({}, process.env, DEVELOPMENT_ENV);
